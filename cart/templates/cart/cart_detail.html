@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Cart</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .btn { padding: 5px 10px; color: white; border-radius: 4px; text-decoration: none; }
+        .btn-danger { background: red; }
+        .btn-success { background: green; }
+    </style>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+    {% if cart_items %}
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
+        </tr>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>${{ item.product.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.item_total }}</td>
+            <td><a href="{% url 'cart:remove_from_cart' item.product.id %}" class="btn btn-danger">Remove</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h3>Total: ${{ total_price }}</h3>
+    <a href="{% url 'orders:create_order' %}" class="btn btn-success">Checkout (Place Order)</a>
+    {% else %}
+    <p>Your cart is empty.</p>
+    {% endif %}
+    <br><br>
+    <a href="{% url 'products:product_list' %}">Back to Products</a>
+</body>
+</html>

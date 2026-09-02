@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Orders</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .navbar { background-color: #1a1d20; padding: 15px 30px; display: flex; justify-content: flex-end; gap: 20px; }
+        .navbar a { color: #ffffff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .container { max-width: 800px; margin: 30px auto; background: white; padding: 20px; border-radius: 8px; }
+        .order-card { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 5px; background: #fff; }
+        .status-pending { font-weight: bold; color: #ff9800; }
+        .status-confirmed { font-weight: bold; color: green; }
+        .status-cancelled { font-weight: bold; color: red; }
+        .items-list { margin-top: 10px; font-size: 14px; color: #555; }
+        .btn { padding: 6px 12px; color: white; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; display: inline-block; margin-right: 5px; }
+        .btn-confirm { background: #28a745; }
+        .btn-cancel { background: #dc3545; }
+        .actions { margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="{% url 'products:product_list' %}">Products</a>
+        <a href="{% url 'cart:cart_detail' %}">Cart 🛒</a>
+        <a href="{% url 'orders:order_list' %}">My Orders</a>
+        <a href="{% url 'recommendations:recommend_list' %}">Recommendations</a>
+    </div>
+
+    <div class="container">
+        <h2>My Orders History</h2>
+
+        {% for order in orders %}
+            <div class="order-card">
+                <h3>Order #{{ order.id }}</h3>
+                <p><strong>Date & Time:</strong> {{ order.created_at|date:"Y-m-d h:i A" }}</p>
+                <p>
+                    <strong>Status:</strong> 
+                    {% if order.status == 'Pending' %}
+                        <span class="status-pending">Pending</span>
+                    {% elif order.status == 'Confirmed' %}
+                        <span class="status-confirmed">Confirmed ✔</span>
+                    {% else %}
+                        <span class="status-cancelled">Cancelled ✖</span>
+                    {% endif %}
+                </p>
+                <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
+                
+                <div class="items-list">
+                    <strong>Order Items:</strong>
+                    <ul>
+                    {% for item in order.items.all %}
+                        <li>{{ item.product.name }} - Quantity: {{ item.quantity }} (${{ item.price }})</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+
+                {% if order.status == 'Pending' %}
+                <div class="actions">
+                    <a href="{% url 'orders:confirm_order' order.id %}" class="btn btn-confirm">Confirm & Submit Order</a>
+                    <a href="{% url 'orders:cancel_order' order.id %}" class="btn btn-cancel">Cancel Order</a>
+                </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>No orders yet.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
